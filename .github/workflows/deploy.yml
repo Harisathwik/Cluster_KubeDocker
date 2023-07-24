@@ -18,7 +18,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: harisathwik/app:${{ github.sha }}
+          tags: harisathwik/streamlit_app:${{ github.sha }}
 
       - name: Install kubectl
         uses: steebchen/kubectl-setup@v1

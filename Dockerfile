@@ -17,4 +17,4 @@ COPY app.py .
 EXPOSE 8501
 
 # Set the command to run the Streamlit app when the container starts
-CMD ["streamlit", "run", "app.py", "--server.port", "8501", "--server.enableCORS", "false"]
+CMD ["streamlit", "run", "app.py", "--server.port", "8501"]

@@ -1,0 +1,34 @@
+name: CI/CD with Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: harisathwik/app:${{ github.sha }}
+
+      - name: Install kubectl
+        uses: steebchen/kubectl-setup@v1
+
+      - name: Apply Kubernetes deployment
+        run: |
+          kubectl apply -f kubernetes/deployment.yaml
+          kubectl apply -f kubernetes/service.yaml
+
+      - name: Install ngrok and expose Kubernetes service
+        run: |
+          ngrok authtoken YOUR_NGROK_AUTH_TOKEN
+          ngrok http 80

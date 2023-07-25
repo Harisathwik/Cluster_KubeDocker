@@ -16,7 +16,7 @@ jobs:
       - name: Set up Kubernetes config
         run: |
           mkdir -p $HOME/.kube/
-          cp kubeconfig.yaml $HOME/.kube/config
+          echo "$KUBECONFIG" > $HOME/.kube/config
           cp .minikube/ca.crt $HOME/.kube/.minikube/ca.crt
           cp .minikube/profiles/minikube/client.crt $HOME/.kube/.minikube/profiles/minikube/client.crt
           cp .minikube/profiles/minikube/client.key $HOME/.kube/.minikube/profiles/minikube/client.key
@@ -44,7 +44,17 @@ jobs:
       - name: Expose Kubernetes service with ngrok
         run: ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }} && ngrok http 80 &
 
-      - name: Apply Kubernetes deployment
+      - name: Wait for ngrok to initialize
+        run: sleep 10
+
+      - name: Get ngrok public URL
+        id: ngrok
+        run: echo "::set-output name=url::$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')"
+
+      - name: Update Kubernetes deployment with ngrok URL
         run: |
           kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
+          kubectl set env deployment/streamlit-app PUBLIC_URL=$(echo ${{ steps.ngrok.outputs.url }})
+
+      - name: Apply Kubernetes service
+        run: kubectl apply -f kubernetes/service.yaml

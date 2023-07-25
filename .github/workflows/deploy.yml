@@ -14,7 +14,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Start Minikube
-        run: minikube start --driver=none
+        run: |
+          sudo apt update
+          sudo apt install conntrack
+          minikube start --driver=none
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -37,7 +40,8 @@ jobs:
           chmod +x /usr/local/bin/ngrok
 
       - name: Expose Kubernetes service with ngrok
-        run: ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }} && ngrok http 80 &
+        run: ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }} && ngrok http 8501 &
+        # Replace '8501' with the port on which your Streamlit app is running
 
       - name: Wait for ngrok to initialize
         run: sleep 10

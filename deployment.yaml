@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: streamlit-app-deployment
+  name: streamlit-app
 spec:
-  replicas: 3  # Number of replicas (pods) to run
+  replicas: 1
   selector:
     matchLabels:
       app: streamlit-app
@@ -13,7 +13,10 @@ spec:
         app: streamlit-app
     spec:
       containers:
-      - name: streamlit-app-container
-        image: harisathwik/streamlit_app:v1  # Replace with your actual container image URL
-        ports:
-        - containerPort: 8501
+        - name: streamlit-app
+          image: harisathwik/streamlit_app:${{ github.sha }}
+          ports:
+            - containerPort: 8501
+          env:
+            - name: PUBLIC_URL
+              value: "http://localhost:8501" # Change the port to match your Streamlit app port

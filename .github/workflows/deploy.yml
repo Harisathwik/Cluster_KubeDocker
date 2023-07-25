@@ -13,11 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Start Minikube
+      - name: Install conntrack and crictl
         run: |
           sudo apt update
-          sudo apt install conntrack
-          minikube start --driver=none
+          sudo apt install -y conntrack
+          sudo apt install -y cri-o-runc
+
+      - name: Start Minikube
+        run: minikube start --driver=none
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

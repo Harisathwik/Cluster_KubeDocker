@@ -12,11 +12,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: .  # Download all repository files to the root directory
 
       - name: Set up Kubernetes config
         run: |
           mkdir -p $HOME/.kube/
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          cp kubeconfig.yaml $HOME/.kube/config  # Replace 'kubeconfig.yaml' with the actual name of your kubeconfig file
+          cp .minikube/ca.crt $HOME/.kube/.minikube/ca.crt
+          cp .minikube/profiles/minikube/client.crt $HOME/.kube/.minikube/profiles/minikube/client.crt
+          cp .minikube/profiles/minikube/client.key $HOME/.kube/.minikube/profiles/minikube/client.key
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1

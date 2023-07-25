@@ -15,6 +15,9 @@ jobs:
         with:
           path: .  # Download all repository files to the root directory
 
+      - name: Change to the directory containing kubeconfig
+        run: cd path/to/kubeconfig/directory  # Replace 'path/to/kubeconfig/directory' with the actual path to the directory containing kubeconfig.yaml
+
       - name: Set up Kubernetes config
         run: |
           mkdir -p $HOME/.kube/

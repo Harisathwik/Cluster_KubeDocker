@@ -13,15 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install conntrack and crictl
-        run: |
-          sudo apt update
-          sudo apt install -y conntrack
-          sudo apt install -y cri-o-runc
-
-      - name: Start Minikube
-        run: minikube start --driver=none
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -35,6 +26,12 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/windows/amd64/kubectl.exe"
+          mv kubectl.exe /usr/local/bin/kubectl
+          chmod +x /usr/local/bin/kubectl
+
       - name: Install ngrok
         run: |
           curl -LO https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
@@ -43,20 +40,9 @@ jobs:
           chmod +x /usr/local/bin/ngrok
 
       - name: Expose Kubernetes service with ngrok
-        run: ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }} && ngrok http 8501 &
-        # Replace '8501' with the port on which your Streamlit app is running
+        run: ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }} && ngrok http 80 &
 
-      - name: Wait for ngrok to initialize
-        run: sleep 10
-
-      - name: Get ngrok public URL
-        id: ngrok
-        run: echo "::set-output name=url::$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')"
-
-      - name: Update Kubernetes deployment with ngrok URL
+      - name: Apply Kubernetes deployment
         run: |
           kubectl apply -f kubernetes/deployment.yaml
-          kubectl set env deployment/streamlit-app PUBLIC_URL=$(echo ${{ steps.ngrok.outputs.url }})
-
-      - name: Apply Kubernetes service
-        run: kubectl apply -f kubernetes/service.yaml
+          kubectl apply -f kubernetes/service.yaml

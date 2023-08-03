@@ -1,3 +1,4 @@
-# Learn_KubeDocker by clustering devices to host web app and launch to internet
+# Cluster_KubeDocker
 
+Cluster devices with kubernetes to host multi-platform docker image web app and expose it to internet with ngrok
 Under Work...

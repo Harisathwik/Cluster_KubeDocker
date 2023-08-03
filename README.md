@@ -1,1 +1,3 @@
-# Learn_KubeDocker
+# Learn_KubeDocker by clustering devices to host web app and launch to internet
+
+Under Work...

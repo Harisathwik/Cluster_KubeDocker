@@ -56,3 +56,21 @@ For Rest of the devices on the same network
 In 1st Device (To get devices list)
 
 	sudo k3s kubectl get node 
+ 
+Install Docker as well on all devices to deploy the apps using kubernetes
+You can use the below code to host the build app. I have included the app code, Dockerfile, deployment and service files.
+	
+	docker build -t [your-app-name] .
+	
+	docker run -p 8501:8501 [your-app-name]
+Visit localhost with port 8501 to verify that app is running
+
+Execute the following code
+
+	kubectl apply -f deployment.yaml
+	kubectl apply -f service.yaml
+
+Edit the number of replicas in deployment.yaml so that they will deployed on all devices. For 2 device I deployed 3 replicas.
+Execute to see the output of replicas on devices.
+
+ 	kubectl get nodes -o wide
